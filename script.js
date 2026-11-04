@@ -2,29 +2,43 @@
 document.addEventListener("DOMContentLoaded", function () {
 
   // =================================
-  // TESTE DE CONEXÃO COM SUPABASE
+  // ELEMENTOS DA TELA DE PRODUTOS
   // =================================
 
-  async function testarConexaoSupabase() {
-    const indicador = document.querySelector(".status");
+  const indicador = document.querySelector(".status");
+  const contadorProdutos = document.getElementById("product-count");
+  const mensagemVazia = document.getElementById("product-empty");
+  const tabelaWrapper = document.getElementById("product-table-wrapper");
+  const tabelaProdutos = document.getElementById("product-table-body");
+
+  // =================================
+  // CONEXÃO E LEITURA DO SUPABASE
+  // =================================
+
+  async function carregarProdutosSupabase() {
 
     if (!window.helpSupabase) {
       if (indicador) {
         indicador.textContent = "● Supabase não inicializado";
       }
+
+      mostrarErroProdutos("Não foi possível inicializar o Supabase.");
       console.error("Cliente Supabase não encontrado.");
       return;
     }
 
     if (indicador) {
-      indicador.textContent = "● Conectando ao Supabase...";
+      indicador.textContent = "● Carregando produtos...";
     }
 
     try {
-      const { error } = await window.helpSupabase
+
+      const { data, error } = await window.helpSupabase
         .from("produtos")
-        .select("id")
-        .limit(1);
+        .select(
+          "id, nome, descricao, categoria, preco_centavos, imagem_url, estoque, ativo, created_at"
+        )
+        .order("created_at", { ascending: false });
 
       if (error) {
         throw error;
@@ -34,18 +48,166 @@ document.addEventListener("DOMContentLoaded", function () {
         indicador.textContent = "● Supabase conectado";
       }
 
-      console.info("HELP BICICLETAS: conexão testada com sucesso.");
+      renderizarProdutos(data || []);
+
+      console.info(
+        "HELP BICICLETAS: produtos carregados:",
+        (data || []).length
+      );
 
     } catch (erro) {
+
       if (indicador) {
-        indicador.textContent = "● Erro na conexão com Supabase";
+        indicador.textContent = "● Erro ao carregar produtos";
       }
 
-      console.error("Falha no teste do Supabase:", erro);
+      mostrarErroProdutos(
+        "Não foi possível carregar os produtos. Verifique a conexão e as permissões."
+      );
+
+      console.error("Erro ao consultar produtos:", erro);
     }
   }
 
-  testarConexaoSupabase();
+  // =================================
+  // FORMATAÇÃO DE PREÇOS
+  // =================================
+
+  function formatarPreco(centavos) {
+
+    const valor = Number(centavos) / 100;
+
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    }).format(valor);
+  }
+
+  // =================================
+  // CRIAÇÃO SEGURA DAS CÉLULAS
+  // =================================
+
+  function criarCelula(valor) {
+
+    const celula = document.createElement("td");
+
+    celula.textContent = valor;
+
+    return celula;
+  }
+
+  // =================================
+  // EXIBIÇÃO DOS PRODUTOS
+  // =================================
+
+  function renderizarProdutos(produtos) {
+
+    if (!tabelaProdutos || !contadorProdutos ||
+        !mensagemVazia || !tabelaWrapper) {
+      return;
+    }
+
+    tabelaProdutos.innerHTML = "";
+
+    contadorProdutos.textContent =
+      produtos.length === 1
+        ? "1 produto"
+        : produtos.length + " produtos";
+
+    if (produtos.length === 0) {
+
+      tabelaWrapper.hidden = true;
+      mensagemVazia.hidden = false;
+
+      const tituloVazio = mensagemVazia.querySelector("h3");
+      const textoVazio = mensagemVazia.querySelector("p");
+
+      if (tituloVazio) {
+        tituloVazio.textContent = "Nenhum produto cadastrado";
+      }
+
+      if (textoVazio) {
+        textoVazio.textContent =
+          "Quando você cadastrar produtos no sistema, eles aparecerão aqui.";
+      }
+
+      return;
+    }
+
+    mensagemVazia.hidden = true;
+    tabelaWrapper.hidden = false;
+
+    const categorias = {
+      bicicletas: "Bicicletas",
+      pecas: "Peças",
+      acessorios: "Acessórios",
+      vestuario: "Vestuário",
+      ferramentas: "Ferramentas",
+      geral: "Outros"
+    };
+
+    produtos.forEach(function (produto) {
+
+      const linha = document.createElement("tr");
+
+      const nome = produto.nome || "Produto sem nome";
+
+      const categoria =
+        categorias[produto.categoria] || produto.categoria || "Outros";
+
+      const preco = formatarPreco(produto.preco_centavos);
+
+      const estoque = Number(produto.estoque || 0);
+
+      const status = produto.ativo
+        ? "Ativo"
+        : "Inativo";
+
+      linha.appendChild(criarCelula(nome));
+      linha.appendChild(criarCelula(categoria));
+      linha.appendChild(criarCelula(preco));
+      linha.appendChild(criarCelula(String(estoque)));
+      linha.appendChild(criarCelula(status));
+      linha.appendChild(criarCelula("—"));
+
+      tabelaProdutos.appendChild(linha);
+    });
+  }
+
+  // =================================
+  // MENSAGENS DE ERRO
+  // =================================
+
+  function mostrarErroProdutos(texto) {
+
+    if (tabelaWrapper) {
+      tabelaWrapper.hidden = true;
+    }
+
+    if (mensagemVazia) {
+
+      mensagemVazia.hidden = false;
+
+      const tituloVazio = mensagemVazia.querySelector("h3");
+      const textoVazio = mensagemVazia.querySelector("p");
+
+      if (tituloVazio) {
+        tituloVazio.textContent = "Não foi possível carregar";
+      }
+
+      if (textoVazio) {
+        textoVazio.textContent = texto;
+      }
+    }
+
+    if (contadorProdutos) {
+      contadorProdutos.textContent = "Indisponível";
+    }
+  }
+
+  // Carrega os produtos ao abrir o painel.
+  carregarProdutosSupabase();
+
 
   // =================================
   // NAVEGAÇÃO DO PAINEL
@@ -201,7 +363,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      // Validação da fotografia
+      // Validação da fotografia.
       if (campoImagem && campoImagem.files.length > 0) {
 
         const imagem = campoImagem.files[0];
@@ -226,7 +388,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       mensagem.textContent =
-        "Dados validados com sucesso! O cadastro ainda não foi gravado. Aguardando integração com o Supabase.";
+        "Dados validados. O cadastro ainda não foi gravado. A gravação será integrada em uma próxima etapa.";
 
       mensagem.style.color = "#4ade80";
 
