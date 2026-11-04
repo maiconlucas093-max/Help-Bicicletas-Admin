@@ -206,7 +206,10 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Carrega os produtos ao abrir o painel.
-  carregarProdutosSupabase();
+  window.addEventListener(
+    "help-admin-authorized",
+    carregarProdutosSupabase
+  );
 
 
   // =================================
