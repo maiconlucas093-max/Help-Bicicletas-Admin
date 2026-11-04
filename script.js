@@ -333,29 +333,67 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function fecharFormulario() {
-
+    function limparModoEdicao() {
+    produtoEmEdicaoId = null;
+    
+    if (tituloFormulario) {
+      tituloFormulario.textContent = "Cadastrar produto";
+    }
+    
+    const botaoSalvar = document.getElementById("btn-salvar-produto");
+    
+    if (botaoSalvar) {
+      botaoSalvar.disabled = false;
+      botaoSalvar.textContent = "Salvar produto";
+    }
+  }
+  
+  function abrirFormulario() {
     if (!formularioCard) return;
-
-    formularioCard.hidden = true;
-
+    
+    formularioCard.hidden = false;
+    
     if (mensagem) {
       mensagem.textContent = "";
     }
-
+    
+    formularioCard.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+  
+  function fecharFormulario() {
+    if (!formularioCard) return;
+    
+    formularioCard.hidden = true;
+    
     if (formulario) {
       formulario.reset();
     }
+    
+    limparModoEdicao();
+    
+    if (mensagem) {
+      mensagem.textContent = "";
+    }
   }
-
+  
   if (botaoNovoProduto) {
-    botaoNovoProduto.addEventListener("click", abrirFormulario);
+    botaoNovoProduto.addEventListener("click", function() {
+      if (formulario) {
+        formulario.reset();
+      }
+      
+      limparModoEdicao();
+      abrirFormulario();
+    });
   }
-
+  
   if (botaoFechar) {
     botaoFechar.addEventListener("click", fecharFormulario);
   }
-
+  
   if (botaoCancelar) {
     botaoCancelar.addEventListener("click", fecharFormulario);
   }
@@ -409,8 +447,7 @@ document.addEventListener("DOMContentLoaded", function () {
       
       mensagem.style.color = "#a5a5a5";
       
-      // Impede salvar como novo cadastro nesta etapa.
-      document.getElementById("btn-salvar-produto").disabled = true;
+
     });
   }
 
