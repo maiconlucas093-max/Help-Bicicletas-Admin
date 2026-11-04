@@ -317,21 +317,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const tituloFormulario =
     document.getElementById("product-form-title");
 
-  function abrirFormulario() {
-
-    if (!formularioCard) return;
-
-    formularioCard.hidden = false;
-
-    if (mensagem) {
-      mensagem.textContent = "";
-    }
-
-    formularioCard.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-  }
+  
 
     function limparModoEdicao() {
     produtoEmEdicaoId = null;
