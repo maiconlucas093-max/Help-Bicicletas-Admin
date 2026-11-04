@@ -1,6 +1,10 @@
 
 document.addEventListener("DOMContentLoaded", function () {
 
+  // =================================
+  // NAVEGAÇÃO DO PAINEL
+  // =================================
+
   const botoesMenu = document.querySelectorAll("[data-page]");
   const atalhos = document.querySelectorAll("[data-open]");
   const paginas = document.querySelectorAll(".page");
@@ -25,15 +29,12 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // Esconde todas as páginas
     paginas.forEach(function (pagina) {
       pagina.classList.remove("active");
     });
 
-    // Mostra a página escolhida
     paginaSelecionada.classList.add("active");
 
-    // Atualiza o botão selecionado
     botoesMenu.forEach(function (botao) {
       botao.classList.toggle(
         "active",
@@ -41,19 +42,16 @@ document.addEventListener("DOMContentLoaded", function () {
       );
     });
 
-    // Atualiza o título superior
     if (titulo) {
       titulo.textContent = titulos[nomePagina] || "Painel administrativo";
     }
 
-    // Volta a tela para o início da página
     window.scrollTo({
       top: 0,
       behavior: "smooth"
     });
   }
 
-  // Navegação pelo menu lateral
   botoesMenu.forEach(function (botao) {
 
     botao.addEventListener("click", function () {
@@ -62,7 +60,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   });
 
-  // Navegação pelos cartões de acesso rápido
   atalhos.forEach(function (atalho) {
 
     atalho.addEventListener("click", function () {
@@ -70,5 +67,125 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
   });
+
+
+  // =================================
+  // FORMULÁRIO DE PRODUTOS
+  // =================================
+
+  const botaoNovoProduto = document.getElementById("btn-novo-produto");
+  const formularioCard = document.getElementById("product-form-card");
+  const formulario = document.getElementById("product-form");
+
+  const botaoFechar = document.getElementById("btn-fechar-form");
+  const botaoCancelar = document.getElementById("btn-cancelar-produto");
+
+  const campoImagem = document.getElementById("produto-imagem");
+  const mensagem = document.getElementById("product-form-message");
+
+  function abrirFormulario() {
+
+    if (!formularioCard) return;
+
+    formularioCard.hidden = false;
+
+    if (mensagem) {
+      mensagem.textContent = "";
+    }
+
+    formularioCard.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+
+  function fecharFormulario() {
+
+    if (!formularioCard) return;
+
+    formularioCard.hidden = true;
+
+    if (mensagem) {
+      mensagem.textContent = "";
+    }
+
+    if (formulario) {
+      formulario.reset();
+    }
+  }
+
+  if (botaoNovoProduto) {
+    botaoNovoProduto.addEventListener("click", abrirFormulario);
+  }
+
+  if (botaoFechar) {
+    botaoFechar.addEventListener("click", fecharFormulario);
+  }
+
+  if (botaoCancelar) {
+    botaoCancelar.addEventListener("click", fecharFormulario);
+  }
+
+
+  // =================================
+  // VALIDAÇÃO DO CADASTRO
+  // =================================
+
+  if (formulario) {
+
+    formulario.addEventListener("submit", function (evento) {
+
+      evento.preventDefault();
+
+      if (!formulario.checkValidity()) {
+        formulario.reportValidity();
+        return;
+      }
+
+      const nome = document.getElementById("produto-nome").value.trim();
+      const categoria = document.getElementById("produto-categoria").value;
+      const preco = Number(document.getElementById("produto-preco").value);
+      const estoque = Number(document.getElementById("produto-estoque").value);
+
+      if (!nome || !categoria || !Number.isFinite(preco) ||
+          preco < 0 || !Number.isInteger(estoque) || estoque < 0) {
+
+        mensagem.textContent = "Confira os dados informados.";
+        mensagem.style.color = "#ed2027";
+        return;
+      }
+
+      // Validação da fotografia
+      if (campoImagem && campoImagem.files.length > 0) {
+
+        const imagem = campoImagem.files[0];
+
+        const formatosPermitidos = [
+          "image/jpeg",
+          "image/png",
+          "image/webp"
+        ];
+
+        if (!formatosPermitidos.includes(imagem.type)) {
+          mensagem.textContent = "Formato inválido. Use JPG, PNG ou WEBP.";
+          mensagem.style.color = "#ed2027";
+          return;
+        }
+
+        if (imagem.size > 5 * 1024 * 1024) {
+          mensagem.textContent = "A fotografia deve ter no máximo 5 MB.";
+          mensagem.style.color = "#ed2027";
+          return;
+        }
+      }
+
+      mensagem.textContent =
+        "Dados validados com sucesso! O cadastro ainda não foi gravado. Aguardando integração com o Supabase.";
+
+      mensagem.style.color = "#4ade80";
+
+    });
+
+  }
 
 });
