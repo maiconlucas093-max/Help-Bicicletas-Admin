@@ -439,7 +439,6 @@ document.addEventListener("DOMContentLoaded", function () {
         botaoSalvar.disabled = false;
         botaoSalvar.textContent = "Atualizar produto";
       }
-      mensagem.style.color = "#a5a5a5";
       
 
     });
