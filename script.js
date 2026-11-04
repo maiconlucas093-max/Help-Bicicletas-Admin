@@ -163,13 +163,28 @@ document.addEventListener("DOMContentLoaded", function () {
         ? "Ativo"
         : "Inativo";
 
-      linha.appendChild(criarCelula(nome));
+            linha.appendChild(criarCelula(nome));
       linha.appendChild(criarCelula(categoria));
       linha.appendChild(criarCelula(preco));
       linha.appendChild(criarCelula(String(estoque)));
       linha.appendChild(criarCelula(status));
-      linha.appendChild(criarCelula("—"));
-
+      
+      const celulaAcoes = document.createElement("td");
+      const botaoEditar = document.createElement("button");
+      
+      botaoEditar.type = "button";
+      botaoEditar.textContent = "EDITAR";
+      botaoEditar.dataset.editId = produto.id;
+      botaoEditar.style.background = "#ed2027";
+      botaoEditar.style.color = "#ffffff";
+      botaoEditar.style.border = "0";
+      botaoEditar.style.borderRadius = "5px";
+      botaoEditar.style.padding = "8px 12px";
+      botaoEditar.style.cursor = "pointer";
+      
+      celulaAcoes.appendChild(botaoEditar);
+      linha.appendChild(celulaAcoes);
+      
       tabelaProdutos.appendChild(linha);
     });
   }
