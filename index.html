@@ -11,7 +11,53 @@
 </head>
 
 <body>
-  <div class="layout">
+
+  <!-- TELA DE LOGIN -->
+  <section class="login-screen" id="login-screen">
+    <div class="login-card">
+      <div class="login-brand">
+        <h1>HELP <span>BICICLETAS</span></h1>
+        <p>STREET. RIDE. FREEDOM.</p>
+      </div>
+
+      <h2>Acesso administrativo</h2>
+      <p class="login-description">
+        Entre com sua conta autorizada para gerenciar a loja.
+      </p>
+
+      <form id="login-form">
+        <div class="login-field">
+          <label for="login-email">E-mail</label>
+          <input
+            type="email"
+            id="login-email"
+            autocomplete="username"
+            placeholder="Seu e-mail"
+            required
+          >
+        </div>
+
+        <div class="login-field">
+          <label for="login-password">Senha</label>
+          <input
+            type="password"
+            id="login-password"
+            autocomplete="current-password"
+            placeholder="Sua senha"
+            required
+          >
+        </div>
+
+        <button type="submit" class="btn-primary" id="btn-login">
+          ENTRAR NO PAINEL
+        </button>
+
+        <p id="login-message" class="login-message" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <div class="layout" id="admin-app" hidden>
 
     <aside class="sidebar">
       <div class="brand">
