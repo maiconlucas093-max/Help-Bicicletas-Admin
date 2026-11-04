@@ -10,7 +10,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const mensagemVazia = document.getElementById("product-empty");
   const tabelaWrapper = document.getElementById("product-table-wrapper");
   const tabelaProdutos = document.getElementById("product-table-body");
-
+  const dashboardProdutos = document.getElementById("dashboard-produtos");
+  const dashboardEstoque = document.getElementById("dashboard-estoque");
   // =================================
   // CONEXÃO E LEITURA DO SUPABASE
   // =================================
@@ -111,7 +112,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     tabelaProdutos.innerHTML = "";
         produtosCarregados = produtos;
-
+    // Atualiza os indicadores da tela inicial.
+    const totalProdutosAtivos = produtos.filter(function(produto) {
+      return produto.ativo === true;
+    }).length;
+    
+    const totalItensEstoque = produtos.reduce(function(total, produto) {
+      return total + Number(produto.estoque || 0);
+    }, 0);
+    
+    if (dashboardProdutos) {
+      dashboardProdutos.textContent = totalProdutosAtivos;
+    }
+    
+    if (dashboardEstoque) {
+      dashboardEstoque.textContent = totalItensEstoque;
+    }
     contadorProdutos.textContent =
       produtos.length === 1
         ? "1 produto"
