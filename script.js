@@ -428,9 +428,17 @@ document.addEventListener("DOMContentLoaded", function () {
       
       abrirFormulario();
       
-      mensagem.textContent =
-        "Dados carregados. O salvamento da edição será ativado na próxima etapa.";
+            mensagem.textContent =
+        "Produto carregado para edição.";
       
+      mensagem.style.color = "#a5a5a5";
+      
+      const botaoSalvar = document.getElementById("btn-salvar-produto");
+      
+      if (botaoSalvar) {
+        botaoSalvar.disabled = false;
+        botaoSalvar.textContent = "Atualizar produto";
+      }
       mensagem.style.color = "#a5a5a5";
       
 
