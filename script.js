@@ -449,27 +449,41 @@ document.addEventListener("DOMContentLoaded", function () {
   // =================================
 
   
-  if (formulario) {
-
-    formulario.addEventListener("submit", async function (evento) {
-
+    if (formulario) {
+    
+    formulario.addEventListener("submit", async function(evento) {
+      
       evento.preventDefault();
-
+      
       if (!formulario.checkValidity()) {
         formulario.reportValidity();
         return;
       }
-
+      
       const nome = document.getElementById("produto-nome").value.trim();
       const categoria = document.getElementById("produto-categoria").value;
       const preco = Number(document.getElementById("produto-preco").value);
       const estoque = Number(document.getElementById("produto-estoque").value);
       const descricao = document.getElementById("produto-descricao").value.trim();
-
-      const imagem = campoImagem && campoImagem.files.length > 0
-        ? campoImagem.files[0]
-        : null;
-
+      
+      const imagem = campoImagem && campoImagem.files.length > 0 ?
+        campoImagem.files[0] :
+        null;
+      
+      const estavaEditando = Boolean(produtoEmEdicaoId);
+      
+      const produtoAtual = estavaEditando ?
+        produtosCarregados.find(function(produto) {
+          return produto.id === produtoEmEdicaoId;
+        }) :
+        null;
+      
+      if (estavaEditando && !produtoAtual) {
+        mensagem.textContent = "Não foi possível localizar o produto.";
+        mensagem.style.color = "#ed2027";
+        return;
+      }
+      
       if (
         !nome ||
         !categoria ||
@@ -482,50 +496,190 @@ document.addEventListener("DOMContentLoaded", function () {
         mensagem.style.color = "#ed2027";
         return;
       }
-
+      
       if (imagem) {
-
+        
         const formatosPermitidos = [
           "image/jpeg",
           "image/png",
           "image/webp"
         ];
-
+        
         if (!formatosPermitidos.includes(imagem.type)) {
           mensagem.textContent = "Use uma imagem JPG, PNG ou WEBP.";
           mensagem.style.color = "#ed2027";
           return;
         }
-
+        
         if (imagem.size > 5 * 1024 * 1024) {
           mensagem.textContent = "A imagem deve ter no máximo 5 MB.";
           mensagem.style.color = "#ed2027";
           return;
         }
       }
-
+      
       const botaoSalvar = document.getElementById("btn-salvar-produto");
       let caminhoImagem = null;
-
+      
       if (botaoSalvar) {
         botaoSalvar.disabled = true;
         botaoSalvar.textContent = "SALVANDO...";
       }
-
-      mensagem.textContent = "Salvando produto...";
+      
+      mensagem.textContent = estavaEditando ?
+        "Atualizando produto..." :
+        "Salvando produto...";
+      
       mensagem.style.color = "#a5a5a5";
-
+      
       try {
-
+        
         const supabase = window.helpSupabase;
-
+        
         if (!supabase) {
           throw new Error("Conexão com Supabase não encontrada.");
         }
-
-        let imagemUrl = null;
-
-        // Envia a fotografia para o Storage.
+        
+        // Mantém a fotografia anterior durante a edição.
+        let imagemUrl = produtoAtual ?
+          produtoAtual.imagem_url :
+          null;
+        
+        // Envia uma nova fotografia, se ela foi selecionada.
+        if (imagem) {
+          
+          const extensoes = {
+            "image/jpeg": "jpg",
+            "image/png": "png",
+            "image/webp": "webp"
+          };
+          
+          const nomeArquivo =
+            Date.now() + "-" +
+            Math.random().toString(36).slice(2) +
+            "." + extensoes[imagem.type];
+          
+          const { error: erroUpload } = await supabase
+            .storage
+            .from("produtos-help-bicicletas")
+            .upload(nomeArquivo, imagem, {
+              cacheControl: "3600",
+              contentType: imagem.type,
+              upsert: false
+            });
+          
+          if (erroUpload) {
+            throw erroUpload;
+          }
+          
+          caminhoImagem = nomeArquivo;
+          
+          const { data: imagemPublica } = supabase
+            .storage
+            .from("produtos-help-bicicletas")
+            .getPublicUrl(nomeArquivo);
+          
+          imagemUrl = imagemPublica.publicUrl;
+        }
+        
+        // Prepara os dados do produto.
+        const dadosProduto = {
+          nome: nome,
+          descricao: descricao,
+          categoria: categoria,
+          preco_centavos: Math.round(preco * 100),
+          imagem_url: imagemUrl,
+          estoque: estoque
+        };
+        
+        // Atualiza o produto existente ou cadastra um novo.
+        if (estavaEditando) {
+          
+          const { data, error: erroAtualizacao } = await supabase
+            .from("produtos")
+            .update(dadosProduto)
+            .eq("id", produtoEmEdicaoId)
+            .select("id");
+          
+          if (erroAtualizacao) {
+            throw erroAtualizacao;
+          }
+          
+          if (!data || data.length === 0) {
+            throw new Error(
+              "Nenhum produto foi atualizado. Verifique sua autorização."
+            );
+          }
+          
+        } else {
+          
+          const { error: erroCadastro } = await supabase
+            .from("produtos")
+            .insert({
+              ...dadosProduto,
+              ativo: true
+            });
+          
+          if (erroCadastro) {
+            throw erroCadastro;
+          }
+        }
+        
+        // A fotografia agora está vinculada ao registro salvo.
+        caminhoImagem = null;
+        
+        // Atualiza a lista de produtos do painel.
+        await carregarProdutosSupabase();
+        
+        formulario.reset();
+        limparModoEdicao();
+        
+        mensagem.textContent = estavaEditando ?
+          "Produto atualizado com sucesso!" :
+          "Produto cadastrado com sucesso!";
+        
+        mensagem.style.color = "#4ade80";
+        
+      } catch (erro) {
+        
+        console.error("Erro ao salvar produto:", erro);
+        
+        // Remove uma nova fotografia se o salvamento falhar.
+        if (caminhoImagem) {
+          
+          const { error: erroRemocao } = await window.helpSupabase
+            .storage
+            .from("produtos-help-bicicletas")
+            .remove([caminhoImagem]);
+          
+          if (erroRemocao) {
+            console.error(
+              "Não foi possível remover a fotografia:",
+              erroRemocao
+            );
+          }
+        }
+        
+        mensagem.textContent =
+          "Não foi possível salvar. " +
+          (erro.message || "Verifique a conexão e tente novamente.");
+        
+        mensagem.style.color = "#ed2027";
+        
+      } finally {
+        
+        if (botaoSalvar) {
+          botaoSalvar.disabled = false;
+          
+          botaoSalvar.textContent = produtoEmEdicaoId ?
+            "Atualizar produto" :
+            "Salvar produto";
+        }
+      }
+      
+    });
+    
+  }
         if (imagem) {
 
           const extensoes = {
