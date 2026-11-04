@@ -311,6 +311,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const campoImagem = document.getElementById("produto-imagem");
   const mensagem = document.getElementById("product-form-message");
+    // Identifica o produto que está sendo editado.
+  let produtoEmEdicaoId = null;
+  
+  const tituloFormulario =
+    document.getElementById("product-form-title");
 
   function abrirFormulario() {
 
@@ -354,7 +359,60 @@ document.addEventListener("DOMContentLoaded", function () {
   if (botaoCancelar) {
     botaoCancelar.addEventListener("click", fecharFormulario);
   }
-
+  // =================================
+  // CARREGAR PRODUTO PARA EDIÇÃO
+  // =================================
+  
+  if (tabelaProdutos) {
+    tabelaProdutos.addEventListener("click", function(evento) {
+      
+      const botao = evento.target.closest("[data-edit-id]");
+      
+      if (!botao) return;
+      
+      const produto = produtosCarregados.find(function(item) {
+        return item.id === botao.dataset.editId;
+      });
+      
+      if (!produto) {
+        console.error("Produto não encontrado para edição.");
+        return;
+      }
+      
+      produtoEmEdicaoId = produto.id;
+      
+      document.getElementById("produto-nome").value =
+        produto.nome || "";
+      
+      document.getElementById("produto-categoria").value =
+        produto.categoria || "";
+      
+      document.getElementById("produto-preco").value =
+        (Number(produto.preco_centavos) / 100).toFixed(2);
+      
+      document.getElementById("produto-estoque").value =
+        Number(produto.estoque || 0);
+      
+      document.getElementById("produto-descricao").value =
+        produto.descricao || "";
+      
+      campoImagem.value = "";
+      
+      if (tituloFormulario) {
+        tituloFormulario.textContent = "Editar produto";
+      }
+      
+      abrirFormulario();
+      
+      mensagem.textContent =
+        "Dados carregados. O salvamento da edição será ativado na próxima etapa.";
+      
+      mensagem.style.color = "#a5a5a5";
+      
+      // Impede salvar como novo cadastro nesta etapa.
+      document.getElementById("btn-salvar-produto").disabled = true;
+    });
+  }
 
   // =================================
   // VALIDAÇÃO DO CADASTRO
