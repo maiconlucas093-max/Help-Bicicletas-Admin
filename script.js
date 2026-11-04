@@ -342,9 +342,10 @@ document.addEventListener("DOMContentLoaded", function () {
   // VALIDAÇÃO DO CADASTRO
   // =================================
 
+  
   if (formulario) {
 
-    formulario.addEventListener("submit", function (evento) {
+    formulario.addEventListener("submit", async function (evento) {
 
       evento.preventDefault();
 
@@ -357,19 +358,26 @@ document.addEventListener("DOMContentLoaded", function () {
       const categoria = document.getElementById("produto-categoria").value;
       const preco = Number(document.getElementById("produto-preco").value);
       const estoque = Number(document.getElementById("produto-estoque").value);
+      const descricao = document.getElementById("produto-descricao").value.trim();
 
-      if (!nome || !categoria || !Number.isFinite(preco) ||
-          preco < 0 || !Number.isInteger(estoque) || estoque < 0) {
+      const imagem = campoImagem && campoImagem.files.length > 0
+        ? campoImagem.files[0]
+        : null;
 
+      if (
+        !nome ||
+        !categoria ||
+        !Number.isFinite(preco) ||
+        preco < 0 ||
+        !Number.isInteger(estoque) ||
+        estoque < 0
+      ) {
         mensagem.textContent = "Confira os dados informados.";
         mensagem.style.color = "#ed2027";
         return;
       }
 
-      // Validação da fotografia.
-      if (campoImagem && campoImagem.files.length > 0) {
-
-        const imagem = campoImagem.files[0];
+      if (imagem) {
 
         const formatosPermitidos = [
           "image/jpeg",
@@ -378,25 +386,140 @@ document.addEventListener("DOMContentLoaded", function () {
         ];
 
         if (!formatosPermitidos.includes(imagem.type)) {
-          mensagem.textContent = "Formato inválido. Use JPG, PNG ou WEBP.";
+          mensagem.textContent = "Use uma imagem JPG, PNG ou WEBP.";
           mensagem.style.color = "#ed2027";
           return;
         }
 
         if (imagem.size > 5 * 1024 * 1024) {
-          mensagem.textContent = "A fotografia deve ter no máximo 5 MB.";
+          mensagem.textContent = "A imagem deve ter no máximo 5 MB.";
           mensagem.style.color = "#ed2027";
           return;
         }
       }
 
-      mensagem.textContent =
-        "Dados validados. O cadastro ainda não foi gravado. A gravação será integrada em uma próxima etapa.";
+      const botaoSalvar = document.getElementById("btn-salvar-produto");
+      let caminhoImagem = null;
 
-      mensagem.style.color = "#4ade80";
+      if (botaoSalvar) {
+        botaoSalvar.disabled = true;
+        botaoSalvar.textContent = "SALVANDO...";
+      }
+
+      mensagem.textContent = "Salvando produto...";
+      mensagem.style.color = "#a5a5a5";
+
+      try {
+
+        const supabase = window.helpSupabase;
+
+        if (!supabase) {
+          throw new Error("Conexão com Supabase não encontrada.");
+        }
+
+        let imagemUrl = null;
+
+        // Envia a fotografia para o Storage.
+        if (imagem) {
+
+          const extensoes = {
+            "image/jpeg": "jpg",
+            "image/png": "png",
+            "image/webp": "webp"
+          };
+
+          const nomeArquivo =
+            Date.now() + "-" +
+            Math.random().toString(36).slice(2) +
+            "." + extensoes[imagem.type];
+
+          caminhoImagem = nomeArquivo;
+
+          const { error: erroUpload } = await supabase
+            .storage
+            .from("produtos-help-bicicletas")
+            .upload(caminhoImagem, imagem, {
+              cacheControl: "3600",
+              contentType: imagem.type,
+              upsert: false
+            });
+
+          if (erroUpload) {
+            throw erroUpload;
+          }
+
+          const { data: imagemPublica } = supabase
+            .storage
+            .from("produtos-help-bicicletas")
+            .getPublicUrl(caminhoImagem);
+
+          imagemUrl = imagemPublica.publicUrl;
+        }
+
+        // Grava os dados na tabela produtos.
+        const { error: erroCadastro } = await supabase
+          .from("produtos")
+          .insert({
+            nome: nome,
+            descricao: descricao,
+            categoria: categoria,
+            preco_centavos: Math.round(preco * 100),
+            imagem_url: imagemUrl,
+            estoque: estoque,
+            ativo: true
+          });
+
+        if (erroCadastro) {
+          throw erroCadastro;
+        }
+
+        // Atualiza a lista com os dados salvos.
+        await carregarProdutosSupabase();
+
+        formulario.reset();
+
+        mensagem.textContent =
+          "Produto cadastrado com sucesso!";
+
+        mensagem.style.color = "#4ade80";
+
+      } catch (erro) {
+
+        console.error("Erro ao cadastrar produto:", erro);
+
+        // Remove a fotografia caso o cadastro no banco falhe.
+        if (caminhoImagem) {
+
+          const { error: erroRemocao } = await window.helpSupabase
+            .storage
+            .from("produtos-help-bicicletas")
+            .remove([caminhoImagem]);
+
+          if (erroRemocao) {
+            console.error(
+              "Não foi possível remover a fotografia:",
+              erroRemocao
+            );
+          }
+        }
+
+        mensagem.textContent =
+          "Não foi possível cadastrar. " +
+          (erro.message || "Verifique a conexão e tente novamente.");
+
+        mensagem.style.color = "#ed2027";
+
+      } finally {
+
+        if (botaoSalvar) {
+          botaoSalvar.disabled = false;
+          botaoSalvar.textContent = "Salvar produto";
+        }
+      }
 
     });
 
   }
+
 
 });
