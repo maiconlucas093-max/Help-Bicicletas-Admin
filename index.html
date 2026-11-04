@@ -1,1 +1,189 @@
-<p>repositorio criado </p>
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101010">
+  <title>HELP BICICLETAS | Administração</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="layout">
+    
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>HELP <span>BICICLETAS</span></h1>
+        <p>STREET. RIDE. FREEDOM.</p>
+      </div>
+      
+      <p class="menu-label">MENU PRINCIPAL</p>
+      
+      <nav class="menu">
+        <button class="active" data-page="inicio">▦ Visão geral</button>
+        <button data-page="produtos">▣ Produtos</button>
+        <button data-page="estoque">▤ Estoque</button>
+        <button data-page="servicos">⚙ Serviços</button>
+        <button data-page="pedidos">▣ Pedidos</button>
+        <button data-page="vendas">▤ Vendas</button>
+        <button data-page="configuracoes">⚙ Configurações</button>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <strong>HELP BICICLETAS</strong><br>
+        Painel administrativo<br>
+        Versão inicial 1.0
+      </div>
+    </aside>
+    
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h2 id="page-title">Visão geral</h2>
+          <small>Central de gerenciamento da loja</small>
+        </div>
+        
+        <div class="admin">
+          <span>Administrador</span>
+          <div class="avatar">A</div>
+        </div>
+      </header>
+      
+      <div class="content">
+        
+        <section class="page active" id="inicio">
+          <div class="welcome">
+            <div>
+              <h1>Painel de controle</h1>
+              <p>Acompanhe e gerencie sua loja em um só lugar.</p>
+            </div>
+            <div class="status">● Sistema demonstrativo</div>
+          </div>
+          
+          <div class="stats">
+            <div class="stat-card">
+              <div class="stat-top">
+                Produtos cadastrados
+                <div class="stat-icon">▣</div>
+              </div>
+              <h2>04</h2>
+              <small>Produtos demonstrativos</small>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-top">
+                Itens em estoque
+                <div class="stat-icon">▤</div>
+              </div>
+              <h2>--</h2>
+              <small>Aguardando integração</small>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-top">
+                Pedidos recebidos
+                <div class="stat-icon">▣</div>
+              </div>
+              <h2>00</h2>
+              <small>Nenhum pedido registrado</small>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-top">
+                Total em vendas
+                <div class="stat-icon">R$</div>
+              </div>
+              <h2>R$ 0,00</h2>
+              <small>Dados ainda não integrados</small>
+            </div>
+          </div>
+          
+          <h3 class="section-title">Acesso rápido</h3>
+          
+          <div class="quick-actions">
+            <div class="action-card" data-open="produtos">
+              <div class="symbol">＋</div>
+              <h3>Gerenciar produtos</h3>
+              <p>Cadastre produtos, preços, descrições e fotografias.</p>
+            </div>
+            
+            <div class="action-card" data-open="servicos">
+              <div class="symbol">⚙</div>
+              <h3>Serviços mecânicos</h3>
+              <p>Gerencie serviços, mão de obra e valores.</p>
+            </div>
+            
+            <div class="action-card" data-open="pedidos">
+              <div class="symbol">▣</div>
+              <h3>Acompanhar pedidos</h3>
+              <p>Visualize e acompanhe as compras dos clientes.</p>
+            </div>
+          </div>
+          
+          <h3 class="section-title">Atividades recentes</h3>
+          
+          <div class="activity">
+            <p>
+              Nenhuma atividade registrada ainda.<br>
+              Quando o painel estiver conectado ao Supabase,
+              as informações reais da loja aparecerão aqui.
+            </p>
+          </div>
+        </section>
+        
+        <section class="page" id="produtos">
+          <div class="placeholder">
+            <h3>Gerenciamento de produtos</h3>
+            Aqui ficará o cadastro, edição, exclusão, preços,
+            fotografias e descrições dos produtos.
+          </div>
+        </section>
+        
+        <section class="page" id="estoque">
+          <div class="placeholder">
+            <h3>Controle de estoque</h3>
+            Aqui ficará o acompanhamento das quantidades
+            disponíveis de cada produto.
+          </div>
+        </section>
+        
+        <section class="page" id="servicos">
+          <div class="placeholder">
+            <h3>Serviços mecânicos</h3>
+            Aqui ficará o cadastro dos serviços e dos valores
+            de mão de obra da oficina.
+          </div>
+        </section>
+        
+        <section class="page" id="pedidos">
+          <div class="placeholder">
+            <h3>Pedidos</h3>
+            Aqui ficará o gerenciamento dos pedidos dos clientes
+            e o acompanhamento de cada etapa.
+          </div>
+        </section>
+        
+        <section class="page" id="vendas">
+          <div class="placeholder">
+            <h3>Vendas</h3>
+            Aqui ficará o resumo financeiro e o histórico de vendas.
+          </div>
+        </section>
+        
+        <section class="page" id="configuracoes">
+          <div class="placeholder">
+            <h3>Configurações</h3>
+            Aqui ficarão as configurações administrativas
+            e o acesso do responsável pela loja.
+          </div>
+        </section>
+        
+      </div>
+    </main>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+
+</html>
