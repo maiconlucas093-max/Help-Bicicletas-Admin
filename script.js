@@ -2,6 +2,52 @@
 document.addEventListener("DOMContentLoaded", function () {
 
   // =================================
+  // TESTE DE CONEXÃO COM SUPABASE
+  // =================================
+
+  async function testarConexaoSupabase() {
+    const indicador = document.querySelector(".status");
+
+    if (!window.helpSupabase) {
+      if (indicador) {
+        indicador.textContent = "● Supabase não inicializado";
+      }
+      console.error("Cliente Supabase não encontrado.");
+      return;
+    }
+
+    if (indicador) {
+      indicador.textContent = "● Conectando ao Supabase...";
+    }
+
+    try {
+      const { error } = await window.helpSupabase
+        .from("produtos")
+        .select("id")
+        .limit(1);
+
+      if (error) {
+        throw error;
+      }
+
+      if (indicador) {
+        indicador.textContent = "● Supabase conectado";
+      }
+
+      console.info("HELP BICICLETAS: conexão testada com sucesso.");
+
+    } catch (erro) {
+      if (indicador) {
+        indicador.textContent = "● Erro na conexão com Supabase";
+      }
+
+      console.error("Falha no teste do Supabase:", erro);
+    }
+  }
+
+  testarConexaoSupabase();
+
+  // =================================
   // NAVEGAÇÃO DO PAINEL
   // =================================
 
