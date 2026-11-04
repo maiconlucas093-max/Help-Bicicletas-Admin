@@ -99,6 +99,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // =================================
   // EXIBIÇÃO DOS PRODUTOS
   // =================================
+  // Mantém os produtos carregados para permitir a edição.
+  let produtosCarregados = [];
 
   function renderizarProdutos(produtos) {
 
@@ -108,6 +110,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     tabelaProdutos.innerHTML = "";
+        produtosCarregados = produtos;
 
     contadorProdutos.textContent =
       produtos.length === 1
