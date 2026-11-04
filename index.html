@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -11,15 +12,15 @@
 
 <body>
   <div class="layout">
-    
+
     <aside class="sidebar">
       <div class="brand">
         <h1>HELP <span>BICICLETAS</span></h1>
         <p>STREET. RIDE. FREEDOM.</p>
       </div>
-      
+
       <p class="menu-label">MENU PRINCIPAL</p>
-      
+
       <nav class="menu">
         <button class="active" data-page="inicio">▦ Visão geral</button>
         <button data-page="produtos">▣ Produtos</button>
@@ -29,30 +30,34 @@
         <button data-page="vendas">▤ Vendas</button>
         <button data-page="configuracoes">⚙ Configurações</button>
       </nav>
-      
+
       <div class="sidebar-footer">
         <strong>HELP BICICLETAS</strong><br>
         Painel administrativo<br>
         Versão inicial 1.0
       </div>
     </aside>
-    
+
     <main class="main">
+
       <header class="topbar">
         <div>
           <h2 id="page-title">Visão geral</h2>
           <small>Central de gerenciamento da loja</small>
         </div>
-        
+
         <div class="admin">
           <span>Administrador</span>
           <div class="avatar">A</div>
         </div>
       </header>
-      
+
       <div class="content">
-        
+
+        <!-- VISÃO GERAL -->
+
         <section class="page active" id="inicio">
+
           <div class="welcome">
             <div>
               <h1>Painel de controle</h1>
@@ -60,8 +65,9 @@
             </div>
             <div class="status">● Sistema demonstrativo</div>
           </div>
-          
+
           <div class="stats">
+
             <div class="stat-card">
               <div class="stat-top">
                 Produtos cadastrados
@@ -70,7 +76,7 @@
               <h2>04</h2>
               <small>Produtos demonstrativos</small>
             </div>
-            
+
             <div class="stat-card">
               <div class="stat-top">
                 Itens em estoque
@@ -79,7 +85,7 @@
               <h2>--</h2>
               <small>Aguardando integração</small>
             </div>
-            
+
             <div class="stat-card">
               <div class="stat-top">
                 Pedidos recebidos
@@ -88,7 +94,7 @@
               <h2>00</h2>
               <small>Nenhum pedido registrado</small>
             </div>
-            
+
             <div class="stat-card">
               <div class="stat-top">
                 Total em vendas
@@ -97,32 +103,35 @@
               <h2>R$ 0,00</h2>
               <small>Dados ainda não integrados</small>
             </div>
+
           </div>
-          
+
           <h3 class="section-title">Acesso rápido</h3>
-          
+
           <div class="quick-actions">
+
             <div class="action-card" data-open="produtos">
               <div class="symbol">＋</div>
               <h3>Gerenciar produtos</h3>
               <p>Cadastre produtos, preços, descrições e fotografias.</p>
             </div>
-            
+
             <div class="action-card" data-open="servicos">
               <div class="symbol">⚙</div>
               <h3>Serviços mecânicos</h3>
               <p>Gerencie serviços, mão de obra e valores.</p>
             </div>
-            
+
             <div class="action-card" data-open="pedidos">
               <div class="symbol">▣</div>
               <h3>Acompanhar pedidos</h3>
               <p>Visualize e acompanhe as compras dos clientes.</p>
             </div>
+
           </div>
-          
+
           <h3 class="section-title">Atividades recentes</h3>
-          
+
           <div class="activity">
             <p>
               Nenhuma atividade registrada ainda.<br>
@@ -130,16 +139,178 @@
               as informações reais da loja aparecerão aqui.
             </p>
           </div>
+
         </section>
-        
+
+        <!-- PRODUTOS -->
+
         <section class="page" id="produtos">
-          <div class="placeholder">
-            <h3>Gerenciamento de produtos</h3>
-            Aqui ficará o cadastro, edição, exclusão, preços,
-            fotografias e descrições dos produtos.
+
+          <div class="welcome">
+            <div>
+              <h1>Gerenciamento de produtos</h1>
+              <p>Cadastre e organize os produtos da HELP BICICLETAS.</p>
+            </div>
           </div>
+
+          <div class="product-toolbar">
+            <div>
+              <h3>Seus produtos</h3>
+              <p>Gerencie nomes, preços, fotografias e estoque.</p>
+            </div>
+
+            <button type="button" class="btn-primary" id="btn-novo-produto">
+              ＋ Novo produto
+            </button>
+          </div>
+
+          <div class="product-form-card" id="product-form-card" hidden>
+
+            <div class="form-heading">
+              <div>
+                <h3 id="product-form-title">Cadastrar produto</h3>
+                <p>Preencha as informações do produto.</p>
+              </div>
+
+              <button type="button" class="btn-close" id="btn-fechar-form">
+                ×
+              </button>
+            </div>
+
+            <form id="product-form">
+
+              <div class="form-grid">
+
+                <div class="form-field field-full">
+                  <label for="produto-nome">Nome do produto</label>
+                  <input
+                    type="text"
+                    id="produto-nome"
+                    name="nome"
+                    placeholder="Ex.: Bicicleta MTB Aro 29"
+                    required
+                  >
+                </div>
+
+                <div class="form-field">
+                  <label for="produto-categoria">Categoria</label>
+                  <select id="produto-categoria" name="categoria" required>
+                    <option value="">Selecione uma categoria</option>
+                    <option value="bicicletas">Bicicletas</option>
+                    <option value="pecas">Peças</option>
+                    <option value="acessorios">Acessórios</option>
+                    <option value="vestuario">Vestuário</option>
+                    <option value="ferramentas">Ferramentas</option>
+                    <option value="geral">Outros</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="produto-preco">Preço (R$)</label>
+                  <input
+                    type="number"
+                    id="produto-preco"
+                    name="preco"
+                    placeholder="0,00"
+                    min="0"
+                    step="0.01"
+                    required
+                  >
+                </div>
+
+                <div class="form-field">
+                  <label for="produto-estoque">Quantidade em estoque</label>
+                  <input
+                    type="number"
+                    id="produto-estoque"
+                    name="estoque"
+                    placeholder="0"
+                    min="0"
+                    step="1"
+                    required
+                  >
+                </div>
+
+                <div class="form-field">
+                  <label for="produto-imagem">Fotografia do produto</label>
+                  <input
+                    type="file"
+                    id="produto-imagem"
+                    name="imagem"
+                    accept="image/jpeg,image/png,image/webp"
+                  >
+                  <small>JPG, PNG ou WEBP. Máximo de 5 MB.</small>
+                </div>
+
+                <div class="form-field field-full">
+                  <label for="produto-descricao">Descrição</label>
+                  <textarea
+                    id="produto-descricao"
+                    name="descricao"
+                    rows="4"
+                    placeholder="Descreva as características do produto..."
+                  ></textarea>
+                </div>
+
+              </div>
+
+              <div class="form-actions">
+                <button type="button" class="btn-secondary" id="btn-cancelar-produto">
+                  Cancelar
+                </button>
+
+                <button type="submit" class="btn-primary" id="btn-salvar-produto">
+                  Salvar produto
+                </button>
+              </div>
+
+              <p class="form-message" id="product-form-message" aria-live="polite"></p>
+
+            </form>
+
+          </div>
+
+          <div class="product-list-card">
+
+            <div class="product-list-heading">
+              <h3>Lista de produtos</h3>
+              <span id="product-count">0 produtos</span>
+            </div>
+
+            <div class="product-empty" id="product-empty">
+              <div class="empty-symbol">▣</div>
+              <h3>Nenhum produto carregado</h3>
+              <p>
+                Quando a integração estiver ativa, seus produtos
+                cadastrados aparecerão nesta lista.
+              </p>
+            </div>
+
+            <div class="product-table-wrapper" id="product-table-wrapper" hidden>
+
+              <table class="product-table">
+                <thead>
+                  <tr>
+                    <th>Produto</th>
+                    <th>Categoria</th>
+                    <th>Preço</th>
+                    <th>Estoque</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+
+                <tbody id="product-table-body"></tbody>
+              </table>
+
+            </div>
+
+          </div>
+
         </section>
-        
+
+        <!-- ESTOQUE -->
+
         <section class="page" id="estoque">
           <div class="placeholder">
             <h3>Controle de estoque</h3>
@@ -147,7 +318,9 @@
             disponíveis de cada produto.
           </div>
         </section>
-        
+
+        <!-- SERVIÇOS -->
+
         <section class="page" id="servicos">
           <div class="placeholder">
             <h3>Serviços mecânicos</h3>
@@ -155,7 +328,9 @@
             de mão de obra da oficina.
           </div>
         </section>
-        
+
+        <!-- PEDIDOS -->
+
         <section class="page" id="pedidos">
           <div class="placeholder">
             <h3>Pedidos</h3>
@@ -163,14 +338,18 @@
             e o acompanhamento de cada etapa.
           </div>
         </section>
-        
+
+        <!-- VENDAS -->
+
         <section class="page" id="vendas">
           <div class="placeholder">
             <h3>Vendas</h3>
             Aqui ficará o resumo financeiro e o histórico de vendas.
           </div>
         </section>
-        
+
+        <!-- CONFIGURAÇÕES -->
+
         <section class="page" id="configuracoes">
           <div class="placeholder">
             <h3>Configurações</h3>
@@ -178,11 +357,11 @@
             e o acesso do responsável pela loja.
           </div>
         </section>
-        
+
       </div>
     </main>
   </div>
-  
+
   <script src="script.js"></script>
 </body>
 
